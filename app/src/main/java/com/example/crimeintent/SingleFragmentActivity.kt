@@ -9,6 +9,7 @@ abstract class SingleFragmentActivity : AppCompatActivity() {
 
     protected abstract fun createFragment(): Fragment?
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fragment)

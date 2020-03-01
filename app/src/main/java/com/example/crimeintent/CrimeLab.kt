@@ -25,6 +25,7 @@ class CrimeLab private constructor(context: Context) {
         }
     }
 
+
     init {
         crimes = ArrayList()
         for (i in 0..99) {
