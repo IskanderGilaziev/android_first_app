@@ -38,7 +38,7 @@ class CrimeFragment : Fragment() {
         val view: View =  inflater.inflate(R.layout.fragment_crime, container, false)
 
         titleField = view.findViewById(R.id.crime_title)
-        titleField.textChanged{it}
+        titleField.textChanged{it} //TODO!!
 
         button = view.findViewById(R.id.crime_date)
         button.text = crime.mDate.toString()
