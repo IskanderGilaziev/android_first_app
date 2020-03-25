@@ -2,7 +2,9 @@ package com.example.crimeintent
 
 import android.content.Context
 import java.util.*
+import kotlin.collections.ArrayList
 
+@Deprecated("Not actual")
 class CrimeLab private constructor(context: Context) {
     val crimes: List<Crime>
 

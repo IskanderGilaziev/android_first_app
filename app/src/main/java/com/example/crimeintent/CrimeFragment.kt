@@ -101,18 +101,16 @@ class CrimeFragment : Fragment() {
 }
 
 
-fun EditText.textChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun beforeTextChanged(p0: CharSequence?, start: Int, before: Int, count: Int) {
-        }
-
-        override fun onTextChanged(c: CharSequence?, start: Int, before: Int, count: Int) {
-        }
-
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-    })
-
-
-}
+//fun EditText.textChanged(afterTextChanged: (String) -> Unit) {
+//    this.addTextChangedListener(object : TextWatcher {
+//        override fun beforeTextChanged(p0: CharSequence?, start: Int, before: Int, count: Int) {
+//        }
+//
+//        override fun onTextChanged(c: CharSequence?, start: Int, before: Int, count: Int) {
+//        }
+//
+//        override fun afterTextChanged(editable: Editable?) {
+//            afterTextChanged.invoke(editable.toString())
+//        }
+//    })
+//}
