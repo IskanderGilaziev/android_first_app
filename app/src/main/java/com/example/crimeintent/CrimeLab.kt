@@ -8,7 +8,7 @@ class CrimeLab private constructor(context: Context) {
 
     fun getCrime(id: UUID): Crime? {
         for (crime in crimes) {
-            if (crime.mId == id) {
+            if (crime.id == id) {
                 return crime
             }
         }
@@ -30,8 +30,8 @@ class CrimeLab private constructor(context: Context) {
         crimes = ArrayList()
         for (i in 0..99) {
             val crime = Crime()
-            crime.mTitle = "Crime #$i"
-            crime.mSolved = i % 2 == 0 // Для каждого второго объекта
+            crime.title = "Crime #$i"
+            crime.isSolved = i % 2 == 0 // Для каждого второго объекта
             crimes.add(crime)
         }
     }

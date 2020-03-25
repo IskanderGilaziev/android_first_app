@@ -9,8 +9,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
-import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 
 
@@ -18,14 +16,16 @@ class CrimeFragment : Fragment() {
 
     private lateinit var crime: Crime
     private lateinit var titleField: EditText
-    private lateinit var button: Button
+    private lateinit var dateButton: Button
     private lateinit var solveCheckBox: CheckBox
-
+    //Экземпляр фрагмента настраивается
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         crime = Crime()
     }
 
+    //создание и настройка представления фрагмента
+    //в этом методе заполняется макет представления фрагмента, а заполнен- ный объект View возвращается активности-хосту
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,22 +38,68 @@ class CrimeFragment : Fragment() {
         val view: View =  inflater.inflate(R.layout.fragment_crime, container, false)
 
         titleField = view.findViewById(R.id.crime_title)
-        titleField.textChanged{it} //TODO!!
+        //titleField.textChanged{it} //TODO!!
 
-        button = view.findViewById(R.id.crime_date)
-        button.text = crime.mDate.toString()
-        button.isEnabled = false
+        dateButton = view.findViewById(R.id.crime_date)
+        dateButton.apply {
+            text = crime.date.toString()
+            isEnabled = false
+        }
 
         solveCheckBox = view.findViewById(R.id.crime_solved)
-        solveCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->  crime.mSolved = isChecked}
-
+        solveCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            crime.isSolved = isChecked }
         return view
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
     }
+
+    /**
+     * View state is restored after onCreateView(…) and before onStart().
+     * When the state is restored, the contents of the EditText will get set to whatever value is currently in crime.title.
+     * At this point, if you have already set a listener on the EditText (such as in onCreate(…) or onCreateView(…)),
+     * TextWatcher’s beforeTextChanged(…), onTextChanged(…), and afterTextChanged(…)functions will execute.
+     * Setting the listener in onStart() avoids this behavior since the listener is hooked up after the view state is restored.
+     */
+
+    override fun onStart() {
+        super.onStart()
+        val titleWatcher = object : TextWatcher {
+
+            override fun beforeTextChanged(
+                sequence: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int) {
+                // This space intentionally left blank
+            }
+
+            override fun onTextChanged(
+                sequence: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int) {
+                crime.title = sequence.toString()
+            }
+
+            override fun afterTextChanged(sequence: Editable?) {
+                // This one too
+            }
+        }
+        titleField.addTextChangedListener(titleWatcher)
+
+        //Even though the OnClickListener is not triggered by the state restoration of the fragment,
+        // putting it in onStart helps keep all of your listeners in one place and easy to find.
+        solveCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            crime.isSolved = isChecked }
+
+    }
+
+
 }
+
 
 fun EditText.textChanged(afterTextChanged: (String) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
@@ -67,4 +113,6 @@ fun EditText.textChanged(afterTextChanged: (String) -> Unit) {
             afterTextChanged.invoke(editable.toString())
         }
     })
+
+
 }
