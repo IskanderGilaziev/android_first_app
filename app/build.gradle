@@ -23,6 +23,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    kapt {
+        arguments {
+            arg("room.schemaLocation", "/Users/a17197289/Desktop/new objects books file/DataBase_Info_Test/AndroidProgramming4e/11_RoomDatabases/databases")
+        }
+    }
 }
 
 

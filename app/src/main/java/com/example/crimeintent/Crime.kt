@@ -8,5 +8,5 @@ import java.util.*
 data class Crime(@PrimaryKey val id: UUID = UUID.randomUUID(),
                  var title: String = "",
                  var date: Date = Date(),
-                 var isSolved: Boolean = false,
-                 var isNeedRequiresPolice: Boolean = true)
+                 var isSolved: Boolean = false)
+//                 var isNeedRequiresPolice: Boolean = true) //TODO закоментировал, т.к. не работало подключение к бд по примеру в книги

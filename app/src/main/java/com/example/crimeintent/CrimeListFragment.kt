@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,16 +22,17 @@ private const val TAG = "CrimeListFragment"
 class CrimeListFragment : Fragment()  {
 
     private lateinit var crimeRecyclerView: RecyclerView
+    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
     private var crimeAdapter: CrimeAdapter? = null
     private val crimeListViewModel: CrimeListViewModel by lazy {
           ViewModelProvider(this).get(CrimeListViewModel::class.java)
     }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "Total crimes: ${crimeListViewModel.crimes.size}")
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        Log.d(TAG, "Total crimes: ${crimeListViewModel.crimes.size}")
+//    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
@@ -38,13 +40,26 @@ class CrimeListFragment : Fragment()  {
         //после создания виджета RecyclerView ему назначается другой объект LayoutManager.
         // Это необходимо для работы виджета RecyclerView.
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
+        crimeRecyclerView.adapter = adapter
 
-        updateUI()
+       // updateUI()
         return view
     }
 
-    private fun updateUI() {
-     val crimes = crimeListViewModel.crimes
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        crimeListViewModel.crimeListLiveData.observe(
+            viewLifecycleOwner,
+            Observer { crimes ->
+                crimes?.let {
+                    Log.i(TAG, "Got crimes ${crimes.size}")
+                    updateUI(crimes)
+                }
+            }
+        )
+    }
+
+    private fun updateUI(crimes: List<Crime>) {
         crimeAdapter = CrimeAdapter(crimes)
         crimeRecyclerView.adapter = crimeAdapter
     }
@@ -153,7 +168,7 @@ class CrimeListFragment : Fragment()  {
         // для определения какой тип обработчика выводить
         override fun getItemViewType(position: Int): Int {
             val crime = crimes[position]
-            if (crime.isNeedRequiresPolice) {
+            if (crime.isSolved) {
                 return RequiresPolice.NEED_CALL_POLICE.code
             }
           return RequiresPolice.NOT_NEED_CALL_POLICE.code
@@ -162,3 +177,28 @@ class CrimeListFragment : Fragment()  {
 
 
 }
+
+//Функция LiveData.observe (LifecycleOwner, Observer) используется для регистрации наблюдателя в
+// экземпляре LiveData и привязки срока действия наблюдения к жизни другого компонента, такого как действие или фрагмент.
+//Второй параметр функции наблюдений (…) - это реализация Observer. Этот объект отвечает за реакцию на новые данные из LiveData.
+// В этом случае блок кода наблюдателя выполняется всякий раз, когда обновляется список преступлений LiveData. Наблюдатель получает список преступлений
+// из LiveData и печатает отчет, если свойство не равно нулю.
+//Если вы никогда не отмените подписку или не отмените свой Observer от прослушивания изменений LiveData,
+// ваша реализация Observer может попытаться обновить представление вашего фрагмента, когда представление находится в недопустимом состоянии
+// (например, когда представление разрушается). И если вы попытаетесь обновить неправильный вид, ваше приложение может произойти сбой.
+//Здесь вступает в действие параметр LifecycleOwner для LiveData.observe (…). Время жизни предоставляемого вами Обозревателя ограничивается
+// временем жизни компонента Android, представленного предоставленным вами LifecycleOwner.
+//Пока владелец жизненного цикла, к которому вы привязали наблюдателя, находится в действительном состоянии жизненного цикла,
+// объект LiveData будет уведомлять наблюдателя о любых новых поступающих данных. Объект LiveData автоматически отменяет регистрацию Observer,
+// когда связанный жизненный цикл больше не находится в действительном штат.
+// Поскольку LiveData реагирует на изменения в жизненном цикле, он называется компонентом, учитывающим жизненный цикл.
+//Владелец жизненного цикла - это компонент, который реализует интерфейс LifecycleOwner и содержит объект Lifecycle.
+// Жизненный цикл - это объект, который отслеживает текущее состояние жизненного цикла Android. (Вспомните, что действия, фрагменты,
+// представления и даже сам процесс приложения имеют свой собственный жизненный цикл.) Состояния жизненного цикла,
+// такие как созданный и возобновленный, перечисляются в Lifecycle.State. Вы можете запросить состояние жизненного цикла
+// с помощью Lifecycle.getCurrentState () или зарегистрироваться, чтобы получать уведомления об изменениях в состоянии.
+
+//Фрагмент AndroidX напрямую является владельцем жизненного цикла - Fragment реализует LifecycleOwner и имеет объект Lifecycle,
+// представляющий состояние жизненного цикла экземпляра фрагмента.
+//Жизненный цикл представления фрагмента принадлежит и отслеживается отдельно FragmentViewLifecycleOwner.
+// Каждый фрагмент имеет экземпляр FragmentViewLifecycleOwner, который отслеживает жизненный цикл представления этого фрагмента.
